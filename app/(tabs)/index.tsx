@@ -24,11 +24,30 @@ export default function CameraAssistant() {
     }
   }, [permission, requestPermission]);
 
-  const analyzeEnvironment = () => {
-    const brightness = Math.floor(Math.random() * 100);
-    const suggestion = generateSettings(brightness, styleInput);
-    setEnvironmentInfo({ brightness, ...suggestion });
-  };
+ const analyzeEnvironment = async () => {
+  if (!cameraRef.current) return;
+
+  const photo = await cameraRef.current.takePictureAsync({ base64: true });
+
+  try {
+    const response = await fetch('http://192.168.43.150:5000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        image: photo.base64,
+        style: styleInput,
+      }),
+    });
+
+    const data = await response.json();
+    setEnvironmentInfo(data);
+  } catch (error) {
+    console.error('Analysis failed:', error);
+  }
+};
+
 
   const generateSettings = (brightness: number, style: string) => {
     let ISO: number, shutterSpeed: string, whiteBalance: string, exposure: string;
