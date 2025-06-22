@@ -30,7 +30,7 @@ export default function CameraAssistant() {
   const photo = await cameraRef.current.takePictureAsync({ base64: true });
 
   try {
-    const response = await fetch('http://192.168.43.150:5000/analyze', {
+    const response = await fetch('http://192.168.137.197:5000/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
